@@ -13,31 +13,29 @@ import psycopg2
 data = pd.read_csv('normalizedDataset.csv', sep=",", header=0, low_memory=False)
 classi = "a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16 a17 a18 a19".split()
 
-flag = True
-indice = 0
-while flag:
-    if data.iloc[indice][0] == "P8":
-        flag = False
+# Suddivisione dataset per test e train
+X_train = data[data.IDSubject != "P8"]
+X_test = data[data.IDSubject == "P8"]
 
-    indice += 1
+X_train = X_train.drop('IDSubject', axis=1)
+y_train = X_train.Class
+X_train = X_train.drop('Class', axis=1)
 
+X_test = X_test.drop('IDSubject', axis=1)
+y_test = X_test.Class
+X_test = X_test.drop('Class', axis=1)
+
+# Calcolo feature più significative
 data = data.drop('IDSubject', axis=1)
 X_data = data.drop('Class', axis=1)
 y_data = data.Class
-
-# Calcolo feature più significative
 test = SelectKBest(score_func=chi2, k=30)
 fit = test.fit(X_data, y_data)
 
-# Estrazione feature 
+# Estrazione feature
 np.set_printoptions(precision=3)
-features = fit.transform(X_data)
-
-# Suddivisione dataset per test e train
-X_train = features[:indice-1]
-y_train = y_data[:indice-1]
-X_test = features[indice-1:]
-y_test = y_data[indice-1:]
+X_train = fit.transform(X_train)
+X_test = fit.transform(X_test)
 
 # Classificazione
 clf = RandomForestClassifier(random_state=None)
