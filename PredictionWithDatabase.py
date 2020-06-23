@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 import psycopg2
+from sklearn import svm
 
 data = pd.read_csv('normalizedDataset.csv', sep=",", header=0, low_memory=False)
 classi = "a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16 a17 a18 a19".split()
@@ -38,7 +39,7 @@ X_train = fit.transform(X_train)
 X_test = fit.transform(X_test)
 
 # Classificazione
-clf = RandomForestClassifier(random_state=None)
+clf = svm.SVC(kernel='linear', random_state=None)
 clf.fit(X_train, y_train)
 y_pred = clf.predict(X_test)
 
